@@ -4,6 +4,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_distribution_name_matches_frappe_app_name():
+    pyproject = (ROOT / "pyproject.toml").read_text()
+    hooks = (ROOT / "frappe_push_relay/hooks.py").read_text()
+    assert 'name = "frappe_push_relay"' in pyproject
+    assert 'app_name = "frappe_push_relay"' in hooks
+    assert 'name = "frappe-push-relay"' not in pyproject
+
+
 def test_frappe_relay_contract_uses_route_aliases_only():
     hooks = (ROOT / "frappe_push_relay/hooks.py").read_text()
     expected_routes = {
