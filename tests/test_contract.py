@@ -4,25 +4,23 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_compatibility_namespace_exists():
-    required = [
-        "notification_relay/api/auth.py",
-        "notification_relay/api/token.py",
-        "notification_relay/api/topic.py",
-        "notification_relay/api/send_notification.py",
-    ]
-    for path in required:
-        assert (ROOT / path).exists(), path
-
-
-def test_frappe_expected_method_names_are_exported():
-    assert "get_credential" in (ROOT / "notification_relay/api/auth.py").read_text()
-    assert "add, remove" in (ROOT / "notification_relay/api/token.py").read_text()
-    topic = (ROOT / "notification_relay/api/topic.py").read_text()
-    for name in ("add", "remove", "subscribe", "unsubscribe"):
-        assert name in topic
-    send = (ROOT / "notification_relay/api/send_notification.py").read_text()
-    assert "topic" in send and "user" in send
+def test_frappe_relay_contract_uses_route_aliases_only():
+    hooks = (ROOT / "frappe_push_relay/hooks.py").read_text()
+    expected_routes = {
+        "notification_relay.api.get_config": "frappe_push_relay.api.config.get_config",
+        "notification_relay.api.auth.get_credential": "frappe_push_relay.api.auth.get_credential",
+        "notification_relay.api.token.add": "frappe_push_relay.api.token.add",
+        "notification_relay.api.token.remove": "frappe_push_relay.api.token.remove",
+        "notification_relay.api.topic.add": "frappe_push_relay.api.topic.add",
+        "notification_relay.api.topic.remove": "frappe_push_relay.api.topic.remove",
+        "notification_relay.api.topic.subscribe": "frappe_push_relay.api.topic.subscribe",
+        "notification_relay.api.topic.unsubscribe": "frappe_push_relay.api.topic.unsubscribe",
+        "notification_relay.api.send_notification.user": "frappe_push_relay.api.send_notification.user",
+        "notification_relay.api.send_notification.topic": "frappe_push_relay.api.send_notification.topic",
+    }
+    for source, target in expected_routes.items():
+        assert f'"{source}": "{target}"' in hooks
+    assert not (ROOT / "notification_relay").exists()
 
 
 def test_desk_boot_exposes_push_relay_url():

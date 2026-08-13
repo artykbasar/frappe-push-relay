@@ -13,7 +13,9 @@ A Local site can optionally enable **Allow Other Sites To Use This Relay**. Remo
 
 ## Compatibility
 
-The app provides compatibility endpoints for Frappe's current `notification_relay.api.*` calls and automatically publishes `push_relay_server_url` through Frappe boot data.
+Frappe core reads `push_relay_server_url` to decide **which relay server** to call, but its `PushNotification` client still calls fixed `notification_relay.api.*` method names on that server. Because this app is installed as `frappe_push_relay`, `hooks.py` aliases only those HTTP API method names to this app's implementations. It does **not** replace or monkey-patch Frappe's `PushNotification` class, `subscribe`, or `unsubscribe` methods.
+
+The app also publishes `push_relay_server_url` through Frappe boot data for compatible browser clients.
 
 Validated during development against:
 
@@ -27,7 +29,7 @@ Applications with a custom push implementation should still be tested against th
 ## Installation
 
 ```bash
-bench get-app https://github.com/<owner>/frappe-push-relay
+bench get-app https://github.com/artykbasar/frappe-push-relay
 bench --site your-site.example.com install-app frappe_push_relay
 bench --site your-site.example.com migrate
 ```

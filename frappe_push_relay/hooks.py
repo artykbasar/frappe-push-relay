@@ -18,8 +18,9 @@ scheduler_events = {
 before_uninstall = "frappe_push_relay.install.before_uninstall"
 boot_session = "frappe_push_relay.boot.boot_session"
 
-# Frappe core calls these historical notification_relay.* method names.
-# Override them to this installed app before Frappe validates the app namespace.
+# Frappe's PushNotification client always calls the notification_relay.api.* contract.
+# This app is installed as frappe_push_relay, so alias those HTTP method names to
+# our implementation. This does not replace frappe.push_notification methods/classes.
 override_whitelisted_methods = {
     "notification_relay.api.get_config": "frappe_push_relay.api.config.get_config",
     "notification_relay.api.auth.get_credential": "frappe_push_relay.api.auth.get_credential",
