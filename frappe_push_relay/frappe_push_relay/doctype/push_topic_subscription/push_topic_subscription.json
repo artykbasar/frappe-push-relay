@@ -1,0 +1,11 @@
+{
+ "doctype":"DocType","name":"Push Topic Subscription","module":"Frappe Push Relay","autoname":"hash",
+ "field_order":["relay_site","project_name","topic","user_id"],
+ "fields":[
+  {"fieldname":"relay_site","label":"Relay Site","fieldtype":"Link","options":"Push Relay Site","reqd":1},
+  {"fieldname":"project_name","label":"Project Name","fieldtype":"Data","reqd":1},
+  {"fieldname":"topic","label":"Topic","fieldtype":"Data","reqd":1},
+  {"fieldname":"user_id","label":"User ID","fieldtype":"Data","reqd":1}
+ ],
+ "permissions":[{"role":"System Manager","read":1,"write":1,"create":1,"delete":1}]
+}

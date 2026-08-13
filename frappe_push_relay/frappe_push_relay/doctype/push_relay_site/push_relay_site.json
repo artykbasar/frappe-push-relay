@@ -1,0 +1,14 @@
+{
+  "doctype":"DocType","name":"Push Relay Site","module":"Frappe Push Relay","autoname":"field:site_name","track_changes":1,
+  "field_order":["site_name","enabled","status","api_user","rate_limit_per_hour","last_seen","approved_on"],
+  "fields":[
+    {"fieldname":"site_name","label":"Site Name","fieldtype":"Data","reqd":1,"unique":1,"description":"Frappe hostname, e.g. hr.example.com"},
+    {"fieldname":"enabled","label":"Enabled","fieldtype":"Check","default":"1"},
+    {"fieldname":"status","label":"Status","fieldtype":"Select","options":"Pending\nActive\nRejected\nDisabled","default":"Pending","reqd":1},
+    {"fieldname":"api_user","label":"API User","fieldtype":"Link","options":"User","read_only":1},
+    {"fieldname":"rate_limit_per_hour","label":"Rate Limit Per Hour","fieldtype":"Int","default":"1000"},
+    {"fieldname":"last_seen","label":"Last Seen","fieldtype":"Datetime","read_only":1},
+    {"fieldname":"approved_on","label":"Approved On","fieldtype":"Datetime","read_only":1}
+  ],
+  "permissions":[{"role":"System Manager","read":1,"write":1,"create":1,"delete":1}]
+}

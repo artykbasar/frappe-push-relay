@@ -1,0 +1,16 @@
+{
+ "doctype":"DocType","name":"Push Device","module":"Frappe Push Relay","autoname":"hash","track_changes":0,
+ "field_order":["relay_site","project_name","user_id","fcm_token","token_hash","enabled","last_seen","failure_count","last_error_code"],
+ "fields":[
+  {"fieldname":"relay_site","label":"Relay Site","fieldtype":"Link","options":"Push Relay Site","reqd":1},
+  {"fieldname":"project_name","label":"Project Name","fieldtype":"Data","reqd":1},
+  {"fieldname":"user_id","label":"User ID","fieldtype":"Data","reqd":1},
+  {"fieldname":"fcm_token","label":"FCM Token","fieldtype":"Small Text","reqd":1},
+  {"fieldname":"token_hash","label":"Token Hash","fieldtype":"Data","read_only":1,"hidden":1},
+  {"fieldname":"enabled","label":"Enabled","fieldtype":"Check","default":"1"},
+  {"fieldname":"last_seen","label":"Last Seen","fieldtype":"Datetime"},
+  {"fieldname":"failure_count","label":"Failure Count","fieldtype":"Int","default":"0"},
+  {"fieldname":"last_error_code","label":"Last Error Code","fieldtype":"Data","read_only":1}
+ ],
+ "permissions":[{"role":"System Manager","read":1,"write":1,"create":1,"delete":1}]
+}

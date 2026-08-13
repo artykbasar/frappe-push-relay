@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "frappe-push-relay"
+dynamic = ["version"]
+description = "Self-hosted push notification relay for Frappe"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{name = "Frappe Push Relay contributors"}]
+license = {text = "MIT"}
+dependencies = [
+  "firebase-admin>=6.5,<8",
+  "requests>=2.31",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "frappe_push_relay.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["frappe_push_relay*", "notification_relay*"]
