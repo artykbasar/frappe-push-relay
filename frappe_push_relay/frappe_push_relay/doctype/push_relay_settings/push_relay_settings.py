@@ -31,8 +31,8 @@ class PushRelaySettings(Document):
             if not self.remote_relay_url:
                 frappe.throw(_("Remote Relay URL is required in Remote mode"))
 
-        if self.allow_other_sites_to_use_this_relay and self.mode != "Local":
-            frappe.throw(_("Relay hosting can only be enabled in Local mode"))
+        if self.mode != "Local":
+            self.allow_other_sites_to_use_this_relay = 0
 
     def on_update(self):
         self._sync_frappe_push_settings()

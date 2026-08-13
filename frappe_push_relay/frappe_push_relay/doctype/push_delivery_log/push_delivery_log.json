@@ -1,17 +1,98 @@
 {
- "doctype":"DocType","name":"Push Delivery Log","module":"Frappe Push Relay","autoname":"hash","track_changes":0,
- "field_order":["relay_site","project_name","target_type","target","status","recipient_count","success_count","failure_count","error_code","completed_on"],
- "fields":[
-  {"fieldname":"relay_site","label":"Relay Site","fieldtype":"Link","options":"Push Relay Site","reqd":1},
-  {"fieldname":"project_name","label":"Project Name","fieldtype":"Data","reqd":1},
-  {"fieldname":"target_type","label":"Target Type","fieldtype":"Select","options":"User\nTopic","reqd":1},
-  {"fieldname":"target","label":"Target","fieldtype":"Data","reqd":1},
-  {"fieldname":"status","label":"Status","fieldtype":"Select","options":"Queued\nSending\nCompleted\nPartial Failure\nFailed","default":"Queued"},
-  {"fieldname":"recipient_count","label":"Recipient Count","fieldtype":"Int","default":"0"},
-  {"fieldname":"success_count","label":"Success Count","fieldtype":"Int","default":"0"},
-  {"fieldname":"failure_count","label":"Failure Count","fieldtype":"Int","default":"0"},
-  {"fieldname":"error_code","label":"Error Code","fieldtype":"Data"},
-  {"fieldname":"completed_on","label":"Completed On","fieldtype":"Datetime"}
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-08-13 18:49:14.482695",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "relay_site",
+  "project_name",
+  "target_type",
+  "target",
+  "status",
+  "recipient_count",
+  "success_count",
+  "failure_count",
+  "error_code",
+  "completed_on"
  ],
- "permissions":[{"role":"System Manager","read":1}]
+ "fields": [
+  {
+   "fieldname": "relay_site",
+   "fieldtype": "Link",
+   "label": "Relay Site",
+   "options": "Push Relay Site",
+   "reqd": 1
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "target_type",
+   "fieldtype": "Select",
+   "label": "Target Type",
+   "options": "User\nTopic",
+   "reqd": 1
+  },
+  {
+   "fieldname": "target",
+   "fieldtype": "Data",
+   "label": "Target",
+   "reqd": 1
+  },
+  {
+   "default": "Queued",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Queued\nSending\nCompleted\nPartial Failure\nFailed"
+  },
+  {
+   "default": "0",
+   "fieldname": "recipient_count",
+   "fieldtype": "Int",
+   "label": "Recipient Count"
+  },
+  {
+   "default": "0",
+   "fieldname": "success_count",
+   "fieldtype": "Int",
+   "label": "Success Count"
+  },
+  {
+   "default": "0",
+   "fieldname": "failure_count",
+   "fieldtype": "Int",
+   "label": "Failure Count"
+  },
+  {
+   "fieldname": "error_code",
+   "fieldtype": "Data",
+   "label": "Error Code"
+  },
+  {
+   "fieldname": "completed_on",
+   "fieldtype": "Datetime",
+   "label": "Completed On"
+  }
+ ],
+ "links": [],
+ "modified": "2026-08-13 18:49:14.482695",
+ "modified_by": "Administrator",
+ "module": "Frappe Push Relay",
+ "name": "Push Delivery Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "role": "System Manager"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
 }

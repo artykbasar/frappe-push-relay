@@ -1,16 +1,94 @@
 {
- "doctype":"DocType","name":"Push Device","module":"Frappe Push Relay","autoname":"hash","track_changes":0,
- "field_order":["relay_site","project_name","user_id","fcm_token","token_hash","enabled","last_seen","failure_count","last_error_code"],
- "fields":[
-  {"fieldname":"relay_site","label":"Relay Site","fieldtype":"Link","options":"Push Relay Site","reqd":1},
-  {"fieldname":"project_name","label":"Project Name","fieldtype":"Data","reqd":1},
-  {"fieldname":"user_id","label":"User ID","fieldtype":"Data","reqd":1},
-  {"fieldname":"fcm_token","label":"FCM Token","fieldtype":"Small Text","reqd":1},
-  {"fieldname":"token_hash","label":"Token Hash","fieldtype":"Data","read_only":1,"hidden":1},
-  {"fieldname":"enabled","label":"Enabled","fieldtype":"Check","default":"1"},
-  {"fieldname":"last_seen","label":"Last Seen","fieldtype":"Datetime"},
-  {"fieldname":"failure_count","label":"Failure Count","fieldtype":"Int","default":"0"},
-  {"fieldname":"last_error_code","label":"Last Error Code","fieldtype":"Data","read_only":1}
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-08-13 18:49:14.582519",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "relay_site",
+  "project_name",
+  "user_id",
+  "fcm_token",
+  "token_hash",
+  "enabled",
+  "last_seen",
+  "failure_count",
+  "last_error_code"
  ],
- "permissions":[{"role":"System Manager","read":1,"write":1,"create":1,"delete":1}]
+ "fields": [
+  {
+   "fieldname": "relay_site",
+   "fieldtype": "Link",
+   "label": "Relay Site",
+   "options": "Push Relay Site",
+   "reqd": 1
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "label": "User ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fcm_token",
+   "fieldtype": "Small Text",
+   "label": "FCM Token",
+   "reqd": 1
+  },
+  {
+   "fieldname": "token_hash",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Token Hash",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "last_seen",
+   "fieldtype": "Datetime",
+   "label": "Last Seen"
+  },
+  {
+   "default": "0",
+   "fieldname": "failure_count",
+   "fieldtype": "Int",
+   "label": "Failure Count"
+  },
+  {
+   "fieldname": "last_error_code",
+   "fieldtype": "Data",
+   "label": "Last Error Code",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-08-13 18:49:14.582519",
+ "modified_by": "Administrator",
+ "module": "Frappe Push Relay",
+ "name": "Push Device",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
 }

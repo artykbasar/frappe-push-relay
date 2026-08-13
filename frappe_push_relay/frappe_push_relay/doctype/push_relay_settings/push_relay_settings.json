@@ -1,29 +1,172 @@
 {
-  "doctype": "DocType",
-  "name": "Push Relay Settings",
-  "module": "Frappe Push Relay",
-  "issingle": 1,
-  "track_changes": 1,
-  "field_order": ["mode", "allow_other_sites_to_use_this_relay", "registration_policy", "firebase_section", "firebase_project_id", "firebase_api_key", "firebase_auth_domain", "firebase_storage_bucket", "firebase_messaging_sender_id", "firebase_app_id", "firebase_measurement_id", "vapid_public_key", "firebase_service_account_json", "remote_section", "remote_relay_url", "maintenance_section", "delivery_log_retention_days", "disabled_device_retention_days"],
-  "fields": [
-    {"fieldname":"mode","label":"Push Mode","fieldtype":"Select","options":"Disabled\nLocal\nRemote","default":"Disabled","reqd":1},
-    {"fieldname":"allow_other_sites_to_use_this_relay","label":"Allow Other Sites To Use This Relay","fieldtype":"Check","default":"0"},
-    {"fieldname":"registration_policy","label":"Registration Policy","fieldtype":"Select","options":"Automatic\nApproval Required","default":"Approval Required","depends_on":"eval:doc.allow_other_sites_to_use_this_relay","description":"Approval Required is recommended for internet-facing relay hosts."},
-    {"fieldname":"firebase_section","label":"Firebase","fieldtype":"Section Break","depends_on":"eval:doc.mode=='Local'"},
-    {"fieldname":"firebase_project_id","label":"Firebase Project ID","fieldtype":"Data"},
-    {"fieldname":"firebase_api_key","label":"Firebase API Key","fieldtype":"Data","description":"Public Firebase Web API key used by browser clients."},
-    {"fieldname":"firebase_auth_domain","label":"Firebase Auth Domain","fieldtype":"Data"},
-    {"fieldname":"firebase_storage_bucket","label":"Firebase Storage Bucket","fieldtype":"Data"},
-    {"fieldname":"firebase_messaging_sender_id","label":"Messaging Sender ID","fieldtype":"Data"},
-    {"fieldname":"firebase_app_id","label":"Firebase App ID","fieldtype":"Data"},
-    {"fieldname":"firebase_measurement_id","label":"Measurement ID","fieldtype":"Data"},
-    {"fieldname":"vapid_public_key","label":"VAPID Public Key","fieldtype":"Small Text","description":"Public Web Push certificate from this same Firebase project: Project settings > Cloud Messaging > Web configuration > Web Push certificates."},
-    {"fieldname":"firebase_service_account_json","label":"Firebase Service Account JSON","fieldtype":"Password"},
-    {"fieldname":"remote_section","label":"Remote Relay","fieldtype":"Section Break","depends_on":"eval:doc.mode=='Remote'"},
-    {"fieldname":"remote_relay_url","label":"Remote Relay URL","fieldtype":"Data"},
-    {"fieldname":"maintenance_section","label":"Maintenance","fieldtype":"Section Break"},
-    {"fieldname":"delivery_log_retention_days","label":"Delivery Log Retention (Days)","fieldtype":"Int","default":"30"},
-    {"fieldname":"disabled_device_retention_days","label":"Disabled Device Retention (Days)","fieldtype":"Int","default":"30"}
-  ],
-  "permissions": [{"role":"System Manager","read":1,"write":1,"create":1,"delete":1}]
+ "actions": [],
+ "creation": "2026-08-13 23:34:00.119639",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "mode",
+  "allow_other_sites_to_use_this_relay",
+  "registration_policy",
+  "firebase_section",
+  "firebase_project_id",
+  "firebase_api_key",
+  "firebase_auth_domain",
+  "firebase_storage_bucket",
+  "firebase_messaging_sender_id",
+  "firebase_app_id",
+  "firebase_measurement_id",
+  "vapid_public_key",
+  "firebase_service_account_json",
+  "remote_section",
+  "remote_relay_url",
+  "maintenance_section",
+  "delivery_log_retention_days",
+  "disabled_device_retention_days"
+ ],
+ "fields": [
+  {
+   "default": "Disabled",
+   "fieldname": "mode",
+   "fieldtype": "Select",
+   "label": "Push Mode",
+   "options": "Disabled\nLocal\nRemote",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "fieldname": "allow_other_sites_to_use_this_relay",
+   "fieldtype": "Check",
+   "label": "Allow Other Sites To Use This Relay"
+  },
+  {
+   "default": "Approval Required",
+   "depends_on": "eval:doc.mode == \"Local\" && doc.allow_other_sites_to_use_this_relay",
+   "description": "Approval Required is recommended for internet-facing relay hosts.",
+   "fieldname": "registration_policy",
+   "fieldtype": "Select",
+   "label": "Registration Policy",
+   "mandatory_depends_on": "eval:doc.mode == \"Local\" && doc.allow_other_sites_to_use_this_relay",
+   "options": "Automatic\nApproval Required"
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "fieldname": "firebase_section",
+   "fieldtype": "Section Break",
+   "label": "Firebase"
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "fieldname": "firebase_project_id",
+   "fieldtype": "Data",
+   "label": "Firebase Project ID",
+   "mandatory_depends_on": "eval:doc.mode == \"Local\""
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "description": "Public Firebase Web API key used by browser clients.",
+   "fieldname": "firebase_api_key",
+   "fieldtype": "Data",
+   "label": "Firebase API Key",
+   "mandatory_depends_on": "eval:doc.mode == \"Local\""
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "fieldname": "firebase_auth_domain",
+   "fieldtype": "Data",
+   "label": "Firebase Auth Domain"
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "fieldname": "firebase_storage_bucket",
+   "fieldtype": "Data",
+   "label": "Firebase Storage Bucket"
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "fieldname": "firebase_messaging_sender_id",
+   "fieldtype": "Data",
+   "label": "Messaging Sender ID",
+   "mandatory_depends_on": "eval:doc.mode == \"Local\""
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "fieldname": "firebase_app_id",
+   "fieldtype": "Data",
+   "label": "Firebase App ID",
+   "mandatory_depends_on": "eval:doc.mode == \"Local\""
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "fieldname": "firebase_measurement_id",
+   "fieldtype": "Data",
+   "label": "Measurement ID"
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "description": "Public Web Push certificate from this same Firebase project: Project settings > Cloud Messaging > Web configuration > Web Push certificates.",
+   "fieldname": "vapid_public_key",
+   "fieldtype": "Small Text",
+   "label": "VAPID Public Key",
+   "mandatory_depends_on": "eval:doc.mode == \"Local\""
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Local\"",
+   "fieldname": "firebase_service_account_json",
+   "fieldtype": "Password",
+   "label": "Firebase Service Account JSON",
+   "mandatory_depends_on": "eval:doc.mode == \"Local\""
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Remote\"",
+   "fieldname": "remote_section",
+   "fieldtype": "Section Break",
+   "label": "Remote Relay"
+  },
+  {
+   "depends_on": "eval:doc.mode == \"Remote\"",
+   "fieldname": "remote_relay_url",
+   "fieldtype": "Data",
+   "label": "Remote Relay URL",
+   "mandatory_depends_on": "eval:doc.mode == \"Remote\""
+  },
+  {
+   "fieldname": "maintenance_section",
+   "fieldtype": "Section Break",
+   "label": "Maintenance"
+  },
+  {
+   "default": "30",
+   "fieldname": "delivery_log_retention_days",
+   "fieldtype": "Int",
+   "label": "Delivery Log Retention (Days)"
+  },
+  {
+   "default": "30",
+   "fieldname": "disabled_device_retention_days",
+   "fieldtype": "Int",
+   "label": "Disabled Device Retention (Days)"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-08-13 23:34:00.119639",
+ "modified_by": "Administrator",
+ "module": "Frappe Push Relay",
+ "name": "Push Relay Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
 }

@@ -1,14 +1,85 @@
 {
-  "doctype":"DocType","name":"Push Relay Site","module":"Frappe Push Relay","autoname":"field:site_name","track_changes":1,
-  "field_order":["site_name","enabled","status","api_user","rate_limit_per_hour","last_seen","approved_on"],
-  "fields":[
-    {"fieldname":"site_name","label":"Site Name","fieldtype":"Data","reqd":1,"unique":1,"description":"Frappe hostname, e.g. hr.example.com"},
-    {"fieldname":"enabled","label":"Enabled","fieldtype":"Check","default":"1"},
-    {"fieldname":"status","label":"Status","fieldtype":"Select","options":"Pending\nActive\nRejected\nDisabled","default":"Pending","reqd":1},
-    {"fieldname":"api_user","label":"API User","fieldtype":"Link","options":"User","read_only":1},
-    {"fieldname":"rate_limit_per_hour","label":"Rate Limit Per Hour","fieldtype":"Int","default":"1000"},
-    {"fieldname":"last_seen","label":"Last Seen","fieldtype":"Datetime","read_only":1},
-    {"fieldname":"approved_on","label":"Approved On","fieldtype":"Datetime","read_only":1}
-  ],
-  "permissions":[{"role":"System Manager","read":1,"write":1,"create":1,"delete":1}]
+ "actions": [],
+ "autoname": "field:site_name",
+ "creation": "2026-08-13 14:20:10.554277",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "site_name",
+  "enabled",
+  "status",
+  "api_user",
+  "rate_limit_per_hour",
+  "last_seen",
+  "approved_on"
+ ],
+ "fields": [
+  {
+   "description": "Frappe hostname, e.g. hr.example.com",
+   "fieldname": "site_name",
+   "fieldtype": "Data",
+   "label": "Site Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nActive\nRejected\nDisabled",
+   "reqd": 1
+  },
+  {
+   "fieldname": "api_user",
+   "fieldtype": "Link",
+   "label": "API User",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "default": "1000",
+   "fieldname": "rate_limit_per_hour",
+   "fieldtype": "Int",
+   "label": "Rate Limit Per Hour"
+  },
+  {
+   "fieldname": "last_seen",
+   "fieldtype": "Datetime",
+   "label": "Last Seen",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved On",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-08-13 14:20:10.554277",
+ "modified_by": "Administrator",
+ "module": "Frappe Push Relay",
+ "name": "Push Relay Site",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
 }
