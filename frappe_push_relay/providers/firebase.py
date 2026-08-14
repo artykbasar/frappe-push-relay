@@ -67,12 +67,49 @@ class FirebaseProvider(PushProvider):
             return SendResult(False, error_code="unregistered", error_message=str(exc), permanent_token_failure=True)
         except messaging.SenderIdMismatchError as exc:
             return SendResult(False, error_code="sender-id-mismatch", error_message=str(exc), permanent_token_failure=True)
+        except fb_exceptions.InvalidArgumentError as exc:
+            if _is_invalid_registration_error(exc, message, messaging):
+                return SendResult(
+                    False,
+                    error_code="invalid-registration",
+                    error_message=str(exc),
+                    permanent_token_failure=True,
+                )
+            return SendResult(False, error_code="INVALID_ARGUMENT", error_message=str(exc))
         except fb_exceptions.FirebaseError as exc:
             code = getattr(exc, "code", None) or exc.__class__.__name__
             return SendResult(False, error_code=str(code), error_message=str(exc))
         except Exception as exc:  # provider boundary: log but do not leak secrets
             frappe.log_error(title="Frappe Push Relay Firebase error", message=frappe.get_traceback())
             return SendResult(False, error_code=exc.__class__.__name__, error_message=str(exc))
+
+
+def _fcm_error_code(exc):
+    response = getattr(exc, "_http_response", None)
+    if response is None:
+        return None
+    try:
+        payload = response.json()
+    except Exception:
+        return None
+    details = ((payload or {}).get("error") or {}).get("details") or []
+    for detail in details:
+        if detail.get("@type") == "type.googleapis.com/google.firebase.fcm.v1.FcmError":
+            return detail.get("errorCode")
+    return None
+
+
+def _is_invalid_registration_error(exc, message, messaging):
+    # FCM uses INVALID_ARGUMENT for both bad payloads and invalid registration
+    # tokens. Only disable the token when the response is FCM-specific and the
+    # exact same message passes Firebase dry-run validation.
+    if _fcm_error_code(exc) != "INVALID_ARGUMENT":
+        return False
+    try:
+        messaging.send(message, app=_firebase_app(), dry_run=True)
+    except Exception:
+        return False
+    return True
 
 
 def _stringify(value):

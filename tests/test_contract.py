@@ -133,3 +133,63 @@ def test_firebase_provider_uses_data_first_web_payload():
     assert "notification=messaging.AndroidNotification(" in provider
     assert "apns=messaging.APNSConfig(" in provider
     assert "alert=messaging.ApsAlert(" in provider
+
+
+def test_invalid_registration_is_distinguished_from_bad_payload():
+    import ast
+
+    provider_path = ROOT / "frappe_push_relay/providers/firebase.py"
+    source = provider_path.read_text()
+    tree = ast.parse(source)
+    helpers = [
+        node for node in tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name in {"_fcm_error_code", "_is_invalid_registration_error"}
+    ]
+    namespace = {"_firebase_app": lambda: "test-app"}
+    exec(compile(ast.Module(body=helpers, type_ignores=[]), str(provider_path), "exec"), namespace)
+    classify = namespace["_is_invalid_registration_error"]
+
+    class Response:
+        def __init__(self, details):
+            self.details = details
+
+        def json(self):
+            return {"error": {"details": self.details}}
+
+    class Error:
+        def __init__(self, details):
+            self._http_response = Response(details)
+
+    class Messaging:
+        def __init__(self, dry_run_error=None):
+            self.calls = []
+            self.dry_run_error = dry_run_error
+
+        def send(self, message, app=None, dry_run=False):
+            self.calls.append((message, app, dry_run))
+            if self.dry_run_error:
+                raise self.dry_run_error
+            return "fake-message-id"
+
+    fcm_invalid = Error([{
+        "@type": "type.googleapis.com/google.firebase.fcm.v1.FcmError",
+        "errorCode": "INVALID_ARGUMENT",
+    }])
+    messaging = Messaging()
+    assert classify(fcm_invalid, "message", messaging) is True
+    assert messaging.calls == [("message", "test-app", True)]
+
+    bad_payload = Error([{
+        "@type": "type.googleapis.com/google.rpc.BadRequest",
+        "fieldViolations": [{"field": "message.data", "description": "bad value"}],
+    }])
+    messaging = Messaging()
+    assert classify(bad_payload, "message", messaging) is False
+    assert messaging.calls == []
+
+    messaging = Messaging(ValueError("dry-run validation failed"))
+    assert classify(fcm_invalid, "message", messaging) is False
+
+    assert 'error_code="invalid-registration"' in source
+    assert "permanent_token_failure=True" in source
