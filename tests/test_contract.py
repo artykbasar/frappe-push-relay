@@ -114,3 +114,22 @@ def test_install_lifecycle_does_not_leave_core_relay_configuration():
     assert 'update_site_config("push_relay_server_url", "None"' in install
     assert fields["mode"]["default"] == "Disabled"
     assert "Push Relay Client" not in hooks + install
+
+
+def test_firebase_provider_uses_data_first_web_payload():
+    provider = (ROOT / "frappe_push_relay/providers/firebase.py").read_text()
+
+    # Web clients render FCM data messages themselves. A top-level notification
+    # makes Firebase auto-display in the background and duplicates the app's
+    # service-worker notification.
+    assert 'clean_data["title"] = str(title or "")' in provider
+    assert 'clean_data["body"] = str(body or "")' in provider
+    assert "notification=None" in provider
+    assert "notification=messaging.Notification" not in provider
+
+    # Native platforms retain native notification payloads without changing the
+    # web message into an auto-displayed notification.
+    assert "android=messaging.AndroidConfig(" in provider
+    assert "notification=messaging.AndroidNotification(" in provider
+    assert "apns=messaging.APNSConfig(" in provider
+    assert "alert=messaging.ApsAlert(" in provider
