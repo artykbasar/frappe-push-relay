@@ -30,9 +30,34 @@ class FirebaseProvider(PushProvider):
         from firebase_admin import messaging
 
         clean_data = {str(k): _stringify(v) for k, v in (data or {}).items() if v is not None}
+        clean_data["title"] = str(title or "")
+        clean_data["body"] = str(body or "")
+
+        # Frappe web clients render background notifications from payload.data
+        # in their service workers. A top-level FCM notification would also be
+        # auto-displayed by Firebase on the web, producing duplicate notifications.
+        # Keep Web data-only while retaining native notification payloads for
+        # Android and APNS consumers.
         message = messaging.Message(
-            notification=messaging.Notification(title=title or "", body=body or ""),
+            notification=None,
             data=clean_data,
+            android=messaging.AndroidConfig(
+                priority="high",
+                notification=messaging.AndroidNotification(
+                    title=title or "",
+                    body=body or "",
+                    sound="default",
+                ),
+            ),
+            apns=messaging.APNSConfig(
+                headers={"apns-priority": "10"},
+                payload=messaging.APNSPayload(
+                    aps=messaging.Aps(
+                        alert=messaging.ApsAlert(title=title or "", body=body or ""),
+                        sound="default",
+                    )
+                ),
+            ),
             token=token,
         )
         try:
