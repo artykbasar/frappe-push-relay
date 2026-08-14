@@ -7,6 +7,7 @@ import frappe
 import requests
 from frappe import _
 from frappe.utils import now_datetime
+from frappe.utils.password import get_decrypted_password, set_encrypted_password
 
 from frappe_push_relay.config import get_settings
 from frappe_push_relay.security import normalize_site_identity, validate_callback_peer_ip, validate_public_callback_url
@@ -72,17 +73,61 @@ def _get_or_create_relay_site(site_name):
     name = frappe.db.exists("Push Relay Site", {"site_name": site_name})
     if name:
         return frappe.get_doc("Push Relay Site", name)
-    return frappe.get_doc({
-        "doctype": "Push Relay Site",
-        "site_name": site_name,
-        "status": "Pending",
-        "enabled": 0,
-    }).insert(ignore_permissions=True)
+
+    try:
+        return frappe.get_doc({
+            "doctype": "Push Relay Site",
+            "site_name": site_name,
+            "status": "Pending",
+            "enabled": 0,
+        }).insert(ignore_permissions=True)
+    except frappe.DuplicateEntryError:
+        # A simultaneous first registration may have created the same unique site.
+        name = frappe.db.exists("Push Relay Site", {"site_name": site_name})
+        if not name:
+            raise
+        return frappe.get_doc("Push Relay Site", name)
+
+
+def _lock_relay_site(site_doc):
+    frappe.db.sql(
+        "SELECT name FROM `tabPush Relay Site` WHERE name = %s FOR UPDATE",
+        site_doc.name,
+    )
+    site_doc.reload()
+    return site_doc
+
+
+def _existing_api_credentials(user_name):
+    api_key = frappe.db.get_value("User", user_name, "api_key")
+    api_secret = get_decrypted_password("User", user_name, "api_secret", raise_exception=False)
+    if api_key and api_secret:
+        return api_key, api_secret
+    return None
+
+
+def _write_api_credentials(user_name):
+    api_key = frappe.db.get_value("User", user_name, "api_key") or frappe.generate_hash(length=24)
+    api_secret = frappe.generate_hash(length=32)
+
+    # Do not save a User document here. User insert hooks/background work can change
+    # its modified timestamp while a relay registration is in flight. API auth only
+    # needs User.api_key plus the encrypted api_secret in __Auth.
+    frappe.db.set_value(
+        "User",
+        user_name,
+        {"api_key": api_key, "api_secret": "********"},
+        update_modified=False,
+    )
+    set_encrypted_password("User", user_name, api_secret, "api_secret")
+    return api_key, api_secret
 
 
 def _create_api_user(site_doc):
     if site_doc.api_user and frappe.db.exists("User", site_doc.api_user):
-        user = frappe.get_doc("User", site_doc.api_user)
+        if credentials := _existing_api_credentials(site_doc.api_user):
+            return credentials
+        user_name = site_doc.api_user
     else:
         suffix = frappe.generate_hash(length=12).lower()
         email = f"push-relay-{suffix}@relay.local"
@@ -97,15 +142,11 @@ def _create_api_user(site_doc):
         })
         user.flags.no_welcome_mail = True
         user.insert(ignore_permissions=True)
-        site_doc.api_user = user.name
+        user_name = user.name
+        frappe.db.set_value("Push Relay Site", site_doc.name, "api_user", user_name, update_modified=False)
+        site_doc.api_user = user_name
 
-    api_secret = frappe.generate_hash(length=32)
-    if not user.api_key:
-        user.api_key = frappe.generate_hash(length=24)
-    user.api_secret = api_secret
-    user.save(ignore_permissions=True)
-    site_doc.save(ignore_permissions=True)
-    return user.api_key, api_secret
+    return _write_api_credentials(user_name)
 
 
 @frappe.whitelist(allow_guest=True, methods=["POST"])
@@ -162,7 +203,7 @@ def get_credential(endpoint, protocol="https", port=None, token=None, webhook_ro
     if str(returned_token).strip().strip('"') != str(token):
         frappe.throw(_("Relay registration callback token did not match"), frappe.AuthenticationError)
 
-    site_doc = _get_or_create_relay_site(registering_host)
+    site_doc = _lock_relay_site(_get_or_create_relay_site(registering_host))
     if not is_self and site_doc.status in {"Rejected", "Disabled"}:
         frappe.throw(_("This relay site has been rejected or disabled"), frappe.PermissionError)
 
@@ -175,6 +216,7 @@ def get_credential(endpoint, protocol="https", port=None, token=None, webhook_ro
     site_doc.status = "Active"
     site_doc.enabled = 1
     site_doc.approved_on = site_doc.approved_on or now_datetime()
+    site_doc.save(ignore_permissions=True)
     api_key, api_secret = _create_api_user(site_doc)
     return {"success": True, "credentials": {"api_key": api_key, "api_secret": api_secret}}
 

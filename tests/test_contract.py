@@ -39,6 +39,15 @@ def test_desk_boot_exposes_push_relay_url():
     assert "push_relay_server_url" in boot
 
 
+def test_relay_credentials_are_race_safe_and_idempotent():
+    auth = (ROOT / "frappe_push_relay/api/auth.py").read_text()
+    assert "FOR UPDATE" in auth
+    assert "_existing_api_credentials" in auth
+    assert "set_encrypted_password" in auth
+    assert "user.save(" not in auth
+    assert "update_modified=False" in auth
+
+
 def test_public_config_is_cross_origin_bootstrap_only():
     config_api = (ROOT / "frappe_push_relay/api/config.py").read_text()
     assert 'methods=["GET"]' in config_api
